@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missão: Estar com e Estar de</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(121, 28, 28, 0.3), transparent 30%),
+                radial-gradient(circle at 80% 90%, rgba(100, 20, 20, 0.25), transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(80, 15, 15, 0.2), transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            color: #fff;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: #2a2a2a;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .question-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 1.5rem;
+        }
+        .question-text-pt {
+            color: #ffeb3b; /* Amarelo para português */
+        }
+        .question-text-en {
+            color: #92d4ee; /* Azul claro para inglês */
+        }
+        input[type="text"] {
+            background-color: #444;
+            border: 1px solid #666;
+            color: #fff;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #818cf8;
+        }
+        .button {
+            font-weight: bold;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, background-color 0.2s;
+            cursor: pointer;
+        }
+        .button:hover {
+            transform: scale(1.05);
+        }
+        .button:active {
+            transform: scale(0.95);
+        }
+        .button.correct {
+            background-color: #10b981; /* Verde */
+            cursor: not-allowed;
+        }
+        .button.correct:hover {
+            transform: none;
+        }
+        .button.incorrect {
+            background-color: #ef4444; /* Vermelho */
+        }
+        .explanation-text {
+            color: #a0a0a0;
+            margin-top: 1rem;
+            transition: opacity 0.5s;
+            opacity: 0;
+            max-width: 80%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-center mb-6 text-white">Missão: Estar com e Estar de</h1>
+        <p class="text-lg mb-8" id="question-counter"></p>
+
+        <div id="quiz-content">
+            <!-- O conteúdo da pergunta será renderizado aqui pelo JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { questionPt: "Como se diz 'Estou com frio', 'fome', 'medo' e 'sono'?", questionEn: "How do you say 'I'm cold', 'hungry', 'afraid', and 'sleepy'?", answer: "I'm cold. / ... hungry. / ... afraid. / ... sleepy.", explanation: "Em português, usamos 'estar com' para expressar sensações físicas e emocionais. Em inglês, usamos o verbo 'to be' seguido do adjetivo correspondente." },
+            { questionPt: "Como se diz 'Estou com vontade de beber uma cerveja'?", questionEn: "How do you say 'I feel like having a beer'?", answer: "I feel like having a beer.", explanation: "A expressão 'estar com vontade de' é traduzida como 'to feel like' em inglês, seguida de um verbo no gerúndio." },
+            { questionPt: "Como se diz 'Estou com muita pressa'?", questionEn: "How do you say 'I am in a big hurry'?", answer: "I'm in a big hurry.", explanation: "A expressão 'estar com pressa' é traduzida como 'to be in a hurry'." },
+            { questionPt: "Como se diz 'Estou com dor de cabeça'?", questionEn: "How do you say 'I have a headache'?", answer: "I have a headache.", explanation: "Para dores ou doenças, o inglês usa o verbo 'to have' ('ter') em vez de 'to be with' ('estar com')." },
+            { questionPt: "Como se diz 'O aparelho está com defeito'?", questionEn: "How do you say 'The device is defective'?", answer: "The device is defective.", explanation: "A expressão 'estar com defeito' pode ser traduzida como 'to be defective' ou 'to have a defect'." },
+            { questionPt: "Como se diz 'Está com jeito de neve'?", questionEn: "How do you say 'It looks like it will snow'?", answer: "It looks like it will snow.", explanation: "A expressão 'estar com jeito de' indica uma aparência ou probabilidade, traduzida como 'to look like' em inglês." },
+            { questionPt: "Como se diz 'Ela está com 15 anos'?", questionEn: "How do you say 'She is 15 years old'?", answer: "She is 15 years old.", explanation: "Em inglês, a idade é expressa com o verbo 'to be', não 'to be with'." },
+            { questionPt: "Como se diz 'Estou de ressaca'?", questionEn: "How do you say 'I have a hangover'?", answer: "I have a hangover.", explanation: "Assim como com dores, o inglês usa 'to have' para traduzir 'estar de ressaca'." },
+            { questionPt: "Como se diz 'Ela está de aniversário'?", questionEn: "How do you say 'It's her birthday'?", answer: "It's her birthday.", explanation: "A expressão 'estar de aniversário' é traduzida como 'it's a birthday' ('é o aniversário') ou 'it's her birthday' ('é o aniversário dela')." },
+            { questionPt: "Como se diz 'Estou de férias'?", questionEn: "How do you say 'I am on vacation'?", answer: "I'm on vacation.", explanation: "A expressão 'estar de' é frequentemente traduzida como 'to be on' em inglês para indicar um período de tempo." },
+            { questionPt: "Como se diz 'Estou de folga'?", questionEn: "How do you say 'I am off duty'?", answer: "I'm off duty.", explanation: "'Estar de folga' significa 'estar fora do trabalho ou de serviço'. Em inglês, traduz-se como 'to be off duty'." },
+            { questionPt: "Como se diz 'Estou de serviço'?", questionEn: "How do you say 'I am on duty'?", answer: "I'm on duty.", explanation: "O oposto de 'estar de folga', indica que a pessoa está trabalhando. Traduz-se como 'to be on duty'." },
+            { questionPt: "Como se diz 'Estou de castigo'?", questionEn: "How do you say 'I am grounded'?", answer: "I'm grounded.", explanation: "'Estar de castigo' significa que a pessoa foi privada de certas atividades. O termo 'grounded' é a tradução mais comum para esse contexto." },
+            { questionPt: "Como se diz 'Estou de saída' ou 'Estou de partida'?", questionEn: "How do you say 'I am leaving' or 'I am departing'?", answer: "I'm leaving. / I'm departing.", explanation: "Ambas as expressões indicam que a pessoa está prestes a sair, e são traduzidas para o inglês usando verbos no presente contínuo." },
+            { questionPt: "Como se diz 'Estou só de passagem'?", questionEn: "How do you say 'I am just passing through'?", answer: "I'm just passing through.", explanation: "Essa frase indica que a pessoa não pretende ficar muito tempo em um lugar, e é traduzida de forma literal." },
+            { questionPt: "Como se diz 'Estamos de acordo'?", questionEn: "How do you say 'We are in agreement'?", answer: "We are in agreement.", explanation: "Para expressar que se concorda com algo, a expressão 'to be in agreement' é usada." },
+            { questionPt: "Como se diz 'Estou com pouco dinheiro'?", questionEn: "How do you say 'I am short on money'?", answer: "I'm short on money.", explanation: "A expressão 'estar com pouco dinheiro' é comumente traduzida como 'to be short on money' ou 'to be low on money'." },
+            { questionPt: "Como se diz 'Está de cabeça para baixo' ou 'Está de pernas para o ar'?", questionEn: "How do you say 'It's upside down' or 'It's a mess'?", answer: "It's upside down. / It's a mess.", explanation: "Ambas as expressões indicam algo que não está em ordem. 'De cabeça para baixo' é 'upside down'. 'De pernas para o ar' é 'a mess' ou 'in a state of disarray'." },
+            { questionPt: "Como se diz 'Está tudo misturado'?", questionEn: "How do you say 'It's all mixed up'?", answer: "It's all mixed up.", explanation: "A expressão é traduzida como 'to be mixed up' em inglês." }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let hintTimeout;
+
+        const quizContent = document.getElementById('quiz-content');
+        const questionCounter = document.getElementById('question-counter');
+
+        function renderQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                renderFinalScreen();
+                return;
+            }
+
+            const q = questions[currentQuestionIndex];
+            quizContent.innerHTML = `
+                <div class="question-card">
+                    <div class="w-full text-center mb-6">
+                        <p class="text-lg sm:text-xl font-medium question-text-pt">${q.questionPt}</p>
+                        <p class="text-lg sm:text-xl font-medium question-text-en mt-2">${q.questionEn}</p>
+                    </div>
+                    <div class="w-full mb-6">
+                        <input type="text" id="answer-input" placeholder="Digite sua resposta aqui...">
+                    </div>
+                    <div class="flex space-x-4">
+                        <button id="check-button" class="button bg-indigo-600 hover:bg-indigo-500 text-white">
+                            Verificar Resposta
+                        </button>
+                        <button id="hint-button" class="button bg-gray-600 hover:bg-gray-500 text-white">
+                            Dica
+                        </button>
+                    </div>
+                    <p id="feedback-text" class="text-lg mt-4" style="min-height: 2rem;"></p>
+                    <p id="explanation-text" class="explanation-text text-sm sm:text-base"></p>
+                    <button id="next-question-button" class="button bg-indigo-600 hover:bg-indigo-500 text-white mt-6 hidden">
+                        Próxima Questão
+                    </button>
+                </div>
+            `;
+            updateCounter();
+            attachEventListeners();
+        }
+
+        function renderFinalScreen() {
+            quizContent.innerHTML = `
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold mb-4">Missão Concluída!</h2>
+                    <p class="text-xl">Sua pontuação final é ${score} de ${questions.length}.</p>
+                    <button onclick="restartQuiz()" class="button bg-indigo-600 hover:bg-indigo-500 text-white mt-6">
+                        Recomeçar
+                    </button>
+                </div>
+            `;
+            questionCounter.textContent = "";
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            renderQuestion();
+        }
+
+        function updateCounter() {
+            questionCounter.textContent = `Questão ${currentQuestionIndex + 1} de ${questions.length}`;
+        }
+
+        function attachEventListeners() {
+            const inputEl = document.getElementById('answer-input');
+            const checkButton = document.getElementById('check-button');
+            const hintButton = document.getElementById('hint-button');
+            const nextButton = document.getElementById('next-question-button');
+            const feedbackText = document.getElementById('feedback-text');
+            const explanationText = document.getElementById('explanation-text');
+            let incorrectAttempts = 0;
+
+            if (hintTimeout) {
+                clearTimeout(hintTimeout);
+            }
+
+            checkButton.addEventListener('click', () => {
+                const userAnswer = inputEl.value.trim().toLowerCase();
+                const correctAnswer = questions[currentQuestionIndex].answer.toLowerCase();
+
+                if (userAnswer === correctAnswer) {
+                    feedbackText.textContent = "Correto! ✅";
+                    feedbackText.style.color = '#10b981';
+                    explanationText.textContent = questions[currentQuestionIndex].explanation;
+                    explanationText.style.opacity = 1;
+                    score++;
+                    checkButton.style.display = 'none';
+                    hintButton.style.display = 'none';
+                    nextButton.classList.remove('hidden');
+                } else {
+                    feedbackText.textContent = "Incorreto. Tente novamente ou use a dica!";
+                    feedbackText.style.color = '#ef4444';
+                    inputEl.value = '';
+                    incorrectAttempts++;
+                    if (incorrectAttempts >= 1) {
+                         hintButton.disabled = false;
+                    }
+                }
+            });
+
+            hintButton.addEventListener('click', () => {
+                const correctAnswer = questions[currentQuestionIndex].answer;
+                let hintText = '';
+                let i = 0;
+
+                if (hintTimeout) {
+                    clearTimeout(hintTimeout);
+                }
+
+                hintButton.disabled = true;
+                checkButton.disabled = false;
+                inputEl.disabled = false;
+
+                feedbackText.textContent = `Dica: `;
+                feedbackText.style.color = '#fff';
+                explanationText.style.opacity = 0;
+
+                function revealNextLetter() {
+                    if (i < correctAnswer.length) {
+                        hintText += correctAnswer[i];
+                        feedbackText.textContent = `Dica: ${hintText}`;
+                        i++;
+                        hintTimeout = setTimeout(revealNextLetter, 150);
+                    }
+                }
+                
+                revealNextLetter();
+            });
+
+            nextButton.addEventListener('click', () => {
+                currentQuestionIndex++;
+                renderQuestion();
+            });
+        }
+        
+        window.onload = renderQuestion;
+    </script>
+</body>
+</html>
